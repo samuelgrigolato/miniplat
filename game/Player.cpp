@@ -44,7 +44,7 @@ bool Player::tick(int32_t &elapsed_time, ComponentRegistry *registry) {
     if (this->ms_since_last_shot >= 1000) {
         this->ms_since_last_shot %= 1000;
         if (this->fire_requested) {
-            Shot *shot = new Shot();
+            std::shared_ptr<Shot> shot(new Shot());
             shot->pos = this->pos;
             shot->color = this->color;
             registry->register_component(shot);
