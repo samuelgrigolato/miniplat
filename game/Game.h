@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <list>
 #include "Component.h"
 #include "Player.h"
 #include "Shot.h"
@@ -16,9 +17,7 @@ public:
     void render(SDL_Renderer *renderer);
     void register_component(Component *component);
 private:
-    Player player1;
-    Player player2;
-    Shot *shot = NULL;
+    std::list<Component*> components;
 };
 
 }

@@ -37,7 +37,7 @@ void Player::digest_event(SDL_Event *event) {
     }
 }
 
-void Player::tick(int32_t &elapsed_time, ComponentRegistry *registry) {
+bool Player::tick(int32_t &elapsed_time, ComponentRegistry *registry) {
     this->pos.x += MOV_PX_PER_MILLI * elapsed_time * this->mov.x;
     this->pos.y += MOV_PX_PER_MILLI * elapsed_time * this->mov.y;
     this->ms_since_last_shot += elapsed_time;
@@ -51,6 +51,7 @@ void Player::tick(int32_t &elapsed_time, ComponentRegistry *registry) {
             this->fire_requested = false;
         }
     }
+    return true;
 }
 
 void Player::render(SDL_Renderer *renderer) {
