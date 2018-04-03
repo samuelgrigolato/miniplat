@@ -2,9 +2,9 @@
 #define COLOREDBOX_H
 
 
-#include <SDL.h>
 #include "PhysicalBody.h"
 #include "../data/Color.h"
+#include "../data/Rect.h"
 
 
 namespace game {
@@ -18,9 +18,10 @@ public:
     //render
     Color color{0, 0, 0};
     void render(SDL_Renderer *renderer) override;
+    Rect* get_bounding_box() override { return &this->rect; }
 protected:
     //render
-    SDL_Rect rect{0, 0, 0, 0};
+    Rect rect{0, 0, 0, 0};
 private:
     //game logic
     virtual int32_t BOX_SIZE() const = 0;

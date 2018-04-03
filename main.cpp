@@ -1,7 +1,9 @@
 #include <SDL.h>
 #include "game/data/arena.h"
+#include "game/data/Rect.h"
 #include "game/init.h"
 #include "game/components/registry.h"
+#include "game/components/Component.h"
 
 
 int main() {
@@ -64,6 +66,21 @@ int main() {
             return comp->tick(elapsed_time);
         });
         last_time = current_time;
+
+        // process collisions
+        for_each_component_pair(
+            // that is collidable
+            [](std::shared_ptr<Component> comp) {
+                return comp->get_bounding_box() != NULL;
+            },
+            [](std::shared_ptr<Component> c1, std::shared_ptr<Component> c2) {
+                game::data::Rect &bbox1 = *c1->get_bounding_box();
+                game::data::Rect &bbox2 = *c2->get_bounding_box();
+                if (game::data::colliding(bbox1, bbox2)) {
+                    c1->process_collision(c2);
+                    c2->process_collision(c1);
+                }
+            });
 
         // render the next frame
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);

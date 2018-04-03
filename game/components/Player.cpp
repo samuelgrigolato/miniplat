@@ -59,6 +59,8 @@ bool Player::tick(int32_t &elapsed_time) {
             this->ms_since_last_shot = 0;
             std::shared_ptr<Shot> shot(new Shot());
             shot->pos = this->pos;
+            shot->pos.x += BOX_SIZE() * this->facing_direction.x;
+            shot->pos.y += BOX_SIZE() * this->facing_direction.y;
             shot->vel = this->facing_direction;
             shot->color = this->color;
             add_component(shot);
@@ -67,7 +69,14 @@ bool Player::tick(int32_t &elapsed_time) {
         this->ms_since_last_shot += elapsed_time;
     }
 
-    return true;
+    return this->alive;
+}
+
+void Player::process_collision(std::shared_ptr<Component> other) {
+    // hit by a shot
+    if (std::dynamic_pointer_cast<Shot>(other) != NULL) {
+        this->alive = false;
+    }
 }
 
 void Player::render(SDL_Renderer *renderer) {
