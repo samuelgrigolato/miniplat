@@ -4,7 +4,6 @@
 #include "registry.h"
 
 
-const int32_t MOV_PX_PER_MILLI = 1;
 const int32_t MILLIS_PER_SHOT = 500;
 
 
@@ -17,19 +16,19 @@ void Player::digest_event(SDL_Event *event) {
         case SDL_KEYDOWN:
             key_code = event->key.keysym.sym;
             if (key_code == this->key_map.up) {
-                this->mov.y = -1;
+                this->vel.y = -1;
                 this->facing_direction.y = -1;
                 this->facing_direction.x = 0;
             } else if (key_code == this->key_map.down) {
-                this->mov.y = 1;
+                this->vel.y = 1;
                 this->facing_direction.y = 1;
                 this->facing_direction.x = 0;
             } else if (key_code == this->key_map.right) {
-                this->mov.x = 1;
+                this->vel.x = 1;
                 this->facing_direction.y = 0;
                 this->facing_direction.x = 1;
             } else if (key_code == this->key_map.left) {
-                this->mov.x = -1;
+                this->vel.x = -1;
                 this->facing_direction.y = 0;
                 this->facing_direction.x = -1;
             } else if (key_code == this->key_map.fire) {
@@ -39,9 +38,9 @@ void Player::digest_event(SDL_Event *event) {
         case SDL_KEYUP:
             key_code = event->key.keysym.sym;
             if (key_code == this->key_map.up || key_code == this->key_map.down) {
-                this->mov.y = 0;
+                this->vel.y = 0;
             } else if (key_code == this->key_map.left || key_code == this->key_map.right) {
-                this->mov.x = 0;
+                this->vel.x = 0;
             } else if (key_code == this->key_map.fire) {
                 this->firing = false;
             }
@@ -52,8 +51,8 @@ void Player::digest_event(SDL_Event *event) {
 }
 
 bool Player::tick(int32_t &elapsed_time) {
-    this->pos.x += MOV_PX_PER_MILLI * elapsed_time * this->mov.x;
-    this->pos.y += MOV_PX_PER_MILLI * elapsed_time * this->mov.y;
+    ColoredBox::tick(elapsed_time);
+
     this->ms_since_last_shot += elapsed_time;
     if (this->ms_since_last_shot >= MILLIS_PER_SHOT) {
         if (this->firing) {
@@ -67,29 +66,30 @@ bool Player::tick(int32_t &elapsed_time) {
     } else {
         this->ms_since_last_shot += elapsed_time;
     }
+
     return true;
 }
 
 void Player::render(SDL_Renderer *renderer) {
+    ColoredBox::render(renderer);
+
     SDL_SetRenderDrawColor(renderer, this->color.r, this->color.g, this->color.b, 255);
-    this->rect.x = this->pos.x - RECT_SIZE/2;
-    this->rect.y = this->pos.y - RECT_SIZE/2;
     if (this->facing_direction.x == 1) {
-        this->direction_mark_rect.x = this->rect.x + RECT_SIZE;
+        this->direction_mark_rect.x = this->rect.x + BOX_SIZE();
     } else if (this->facing_direction.x == -1) {
-        this->direction_mark_rect.x = this->rect.x - RECT_SIZE/2;
+        this->direction_mark_rect.x = this->rect.x - BOX_SIZE()/2;
     } else {
-        this->direction_mark_rect.x = this->rect.x + RECT_SIZE/4;
+        this->direction_mark_rect.x = this->rect.x + BOX_SIZE()/4;
     }
     if (this->facing_direction.y == 1) {
-        this->direction_mark_rect.y = this->rect.y + RECT_SIZE;
+        this->direction_mark_rect.y = this->rect.y + BOX_SIZE();
     } else if (this->facing_direction.y == -1) {
-        this->direction_mark_rect.y = this->rect.y - RECT_SIZE/2;
+        this->direction_mark_rect.y = this->rect.y - BOX_SIZE()/2;
     } else {
-        this->direction_mark_rect.y = this->rect.y + RECT_SIZE/4;
+        this->direction_mark_rect.y = this->rect.y + BOX_SIZE()/4;
     }
-    SDL_RenderFillRect(renderer, &this->rect);
     SDL_RenderFillRect(renderer, &this->direction_mark_rect);
+
 }
 
 }}

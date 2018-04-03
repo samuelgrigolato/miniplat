@@ -24,6 +24,7 @@ void for_each_component(std::function<bool(std::shared_ptr<Component>)> action) 
 }
 
 void add_component(std::shared_ptr<Component> component) {
+    component->init();
     components_list.push_back(component);
 }
 
