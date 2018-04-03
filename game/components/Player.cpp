@@ -1,5 +1,7 @@
+#include <memory>
 #include "Player.h"
 #include "Shot.h"
+#include "registry.h"
 
 
 const int32_t MOV_PX_PER_MILLI = 1;
@@ -7,6 +9,7 @@ const int32_t MILLIS_PER_SHOT = 500;
 
 
 namespace game {
+namespace components {
 
 void Player::digest_event(SDL_Event *event) {
     int8_t key_code;
@@ -48,7 +51,7 @@ void Player::digest_event(SDL_Event *event) {
     }
 }
 
-bool Player::tick(int32_t &elapsed_time, ComponentRegistry *registry) {
+bool Player::tick(int32_t &elapsed_time) {
     this->pos.x += MOV_PX_PER_MILLI * elapsed_time * this->mov.x;
     this->pos.y += MOV_PX_PER_MILLI * elapsed_time * this->mov.y;
     this->ms_since_last_shot += elapsed_time;
@@ -59,7 +62,7 @@ bool Player::tick(int32_t &elapsed_time, ComponentRegistry *registry) {
             shot->pos = this->pos;
             shot->vel = this->facing_direction;
             shot->color = this->color;
-            registry->register_component(shot);
+            add_component(shot);
         }
     } else {
         this->ms_since_last_shot += elapsed_time;
@@ -89,4 +92,4 @@ void Player::render(SDL_Renderer *renderer) {
     SDL_RenderFillRect(renderer, &this->direction_mark_rect);
 }
 
-}
+}}

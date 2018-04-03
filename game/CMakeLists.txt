@@ -1,6 +1,6 @@
 
+add_subdirectory("components")
+
 add_sources(
-    Game.cpp
-    Player.cpp
-    Shot.cpp
+    init.cpp
 )

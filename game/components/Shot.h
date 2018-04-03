@@ -2,12 +2,15 @@
 #define SHOT_H
 
 #include "Component.h"
-#include "Vec2.h"
-#include "Color.h"
-#include "KeyMap.h"
+#include "../data/Vec2.h"
+#include "../data/Color.h"
+#include "../data/KeyMap.h"
 
 
 namespace game {
+namespace components {
+
+using namespace data;
 
 class Shot : public Component {
 public:
@@ -15,13 +18,13 @@ public:
     Vec2 vel{0, 0};
     Color color{0, 0, 0};
     void digest_event(SDL_Event *event) override;
-    bool tick(int32_t &elapsed_time, ComponentRegistry *registry) override;
+    bool tick(int32_t &elapsed_time) override;
     void render(SDL_Renderer *renderer) override;
 private:
     static const int32_t RECT_SIZE = 5;
     SDL_Rect rect{0, 0, RECT_SIZE, RECT_SIZE};
 };
 
-}
+}}
 
 #endif

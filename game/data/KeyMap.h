@@ -5,6 +5,7 @@
 
 
 namespace game {
+namespace data {
 
 struct KeyMap {
     int8_t up;
@@ -14,6 +15,6 @@ struct KeyMap {
     int8_t fire;
 };
 
-}
+}}
 
 #endif

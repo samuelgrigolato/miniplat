@@ -3,12 +3,15 @@
 
 #include <stdint.h>
 #include "Component.h"
-#include "Vec2.h"
-#include "Color.h"
-#include "KeyMap.h"
+#include "../data/Vec2.h"
+#include "../data/Color.h"
+#include "../data/KeyMap.h"
 
 
 namespace game {
+namespace components {
+
+using namespace data;
 
 class Player : public Component {
 public:
@@ -16,7 +19,7 @@ public:
     Color color{0, 0, 0};
     KeyMap key_map{-1, -1, -1, -1, -1};
     void digest_event(SDL_Event *event) override;
-    bool tick(int32_t &elapsed_time, ComponentRegistry *registry) override;
+    bool tick(int32_t &elapsed_time) override;
     void render(SDL_Renderer *renderer) override;
 private:
     static const int32_t RECT_SIZE = 20;
@@ -28,6 +31,6 @@ private:
     Vec2 facing_direction{1, 0};
 };
 
-}
+}}
 
 #endif

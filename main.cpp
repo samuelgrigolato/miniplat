@@ -1,6 +1,7 @@
 #include <SDL.h>
-#include "game/Screen.h"
-#include "game/Game.h"
+#include "game/data/arena.h"
+#include "game/init.h"
+#include "game/components/registry.h"
 
 
 int main() {
@@ -31,9 +32,9 @@ int main() {
 
     // this gives us a logical viewport no matter
     // what the actual resolution is
-    SDL_RenderSetLogicalSize(renderer, game::SCREEN_WINDOW_WIDTH, game::SCREEN_WINDOW_HEIGHT);
+    SDL_RenderSetLogicalSize(renderer, game::data::ARENA_WIDTH, game::data::ARENA_HEIGHT);
 
-    game::Game game;
+    game::init();
 
     SDL_Event event;
     auto running = true;
@@ -42,25 +43,35 @@ int main() {
     int32_t elapsed_time;
     while (running) {
 
+        using namespace game::components;
+
         // digest events
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = false;
             } else {
-                game.digest_event(&event);
+                for_each_component([&event](std::shared_ptr<Component> comp) {
+                    comp->digest_event(&event);
+                    return true;
+                });
             }
         }
 
         // run game logic
         current_time = SDL_GetTicks();
         elapsed_time = current_time - last_time;
-        game.tick(elapsed_time);
+        for_each_component([&elapsed_time](std::shared_ptr<Component> comp) {
+            return comp->tick(elapsed_time);
+        });
         last_time = current_time;
 
         // render the next frame
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        game.render(renderer);
+        for_each_component([&renderer](std::shared_ptr<Component> comp) {
+            comp->render(renderer);
+            return true;
+        });
         SDL_RenderPresent(renderer);
     }
 
