@@ -18,8 +18,7 @@ public:
     bool tick(int32_t &elapsed_time, ComponentRegistry *registry) override;
     void render(SDL_Renderer *renderer) override;
 private:
-    static const int32_t RECT_SIZE = 20;
-    static const int32_t HALF_RECT_SIZE;
+    static const int32_t RECT_SIZE = 5;
     SDL_Rect rect{0, 0, RECT_SIZE, RECT_SIZE};
 };
 

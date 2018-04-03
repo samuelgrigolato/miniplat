@@ -1,3 +1,4 @@
+#include "Screen.h"
 #include "Game.h"
 
 
@@ -6,8 +7,8 @@ namespace game {
 Game::Game() {
 
     std::shared_ptr<Player> p1(new Player());
-    p1->pos.x = 100;
-    p1->pos.y = 100;
+    p1->pos.x = SCREEN_WINDOW_WIDTH / 10;
+    p1->pos.y = SCREEN_WINDOW_HEIGHT / 10;
     p1->color.r = 255;
     p1->color.g = 100;
     p1->color.b = 100;
@@ -19,8 +20,8 @@ Game::Game() {
     this->register_component(p1);
 
     std::shared_ptr<Player> p2(new Player());
-    p2->pos.x = 900;
-    p2->pos.y = 900;
+    p2->pos.x = (SCREEN_WINDOW_WIDTH / 10) * 9;
+    p2->pos.y = (SCREEN_WINDOW_HEIGHT / 10) * 9;
     p2->color.r = 100;
     p2->color.g = 100;
     p2->color.b = 255;

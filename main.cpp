@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include "game/Screen.h"
 #include "game/Game.h"
 
 
@@ -30,7 +31,7 @@ int main() {
 
     // this gives us a logical viewport no matter
     // what the actual resolution is
-    SDL_RenderSetLogicalSize(renderer, 1000, 1000);
+    SDL_RenderSetLogicalSize(renderer, game::SCREEN_WINDOW_WIDTH, game::SCREEN_WINDOW_HEIGHT);
 
     game::Game game;
 

@@ -2,12 +2,11 @@
 #include "Shot.h"
 
 
-namespace game {
-
-const int32_t Player::HALF_RECT_SIZE = Player::RECT_SIZE / 2;
-const int32_t Player::QUARTER_RECT_SIZE = Player::RECT_SIZE / 4;
 const int32_t MOV_PX_PER_MILLI = 1;
 const int32_t MILLIS_PER_SHOT = 500;
+
+
+namespace game {
 
 void Player::digest_event(SDL_Event *event) {
     int8_t key_code;
@@ -70,21 +69,21 @@ bool Player::tick(int32_t &elapsed_time, ComponentRegistry *registry) {
 
 void Player::render(SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(renderer, this->color.r, this->color.g, this->color.b, 255);
-    this->rect.x = this->pos.x - HALF_RECT_SIZE;
-    this->rect.y = this->pos.y - HALF_RECT_SIZE;
+    this->rect.x = this->pos.x - RECT_SIZE/2;
+    this->rect.y = this->pos.y - RECT_SIZE/2;
     if (this->facing_direction.x == 1) {
         this->direction_mark_rect.x = this->rect.x + RECT_SIZE;
     } else if (this->facing_direction.x == -1) {
-        this->direction_mark_rect.x = this->rect.x - HALF_RECT_SIZE;
+        this->direction_mark_rect.x = this->rect.x - RECT_SIZE/2;
     } else {
-        this->direction_mark_rect.x = this->rect.x + QUARTER_RECT_SIZE;
+        this->direction_mark_rect.x = this->rect.x + RECT_SIZE/4;
     }
     if (this->facing_direction.y == 1) {
         this->direction_mark_rect.y = this->rect.y + RECT_SIZE;
     } else if (this->facing_direction.y == -1) {
-        this->direction_mark_rect.y = this->rect.y - HALF_RECT_SIZE;
+        this->direction_mark_rect.y = this->rect.y - RECT_SIZE/2;
     } else {
-        this->direction_mark_rect.y = this->rect.y + QUARTER_RECT_SIZE;
+        this->direction_mark_rect.y = this->rect.y + RECT_SIZE/4;
     }
     SDL_RenderFillRect(renderer, &this->rect);
     SDL_RenderFillRect(renderer, &this->direction_mark_rect);
