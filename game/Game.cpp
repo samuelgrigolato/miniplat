@@ -28,7 +28,7 @@ Game::Game() {
     p2->key_map.left = (int8_t)SDLK_LEFT;
     p2->key_map.down = (int8_t)SDLK_DOWN;
     p2->key_map.right = (int8_t)SDLK_RIGHT;
-    p2->key_map.fire = SDLK_0;
+    p2->key_map.fire = (int8_t)SDLK_KP_0;
     this->register_component(p2);
 
 }
