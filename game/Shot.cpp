@@ -4,14 +4,14 @@
 namespace game {
 
 const int32_t Shot::HALF_RECT_SIZE = Shot::RECT_SIZE / 2;
-const int32_t MOV_PX_PER_MILLI = 1;
+const int32_t MOV_PX_PER_MILLI = 2;
 
 void Shot::digest_event(SDL_Event *event) {
 }
 
 bool Shot::tick(int32_t &elapsed_time, ComponentRegistry *registry) {
-    this->pos.x += MOV_PX_PER_MILLI * elapsed_time;
-    this->pos.y += MOV_PX_PER_MILLI * elapsed_time;
+    this->pos.x += this->vel.x * MOV_PX_PER_MILLI * elapsed_time;
+    this->pos.y += this->vel.y * MOV_PX_PER_MILLI * elapsed_time;
     
     bool keep_me_alive = this->pos.x > 50 && this->pos.x < 950 &&
                          this->pos.y > 50 && this->pos.y < 950;

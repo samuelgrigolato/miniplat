@@ -21,10 +21,13 @@ public:
 private:
     static const int32_t RECT_SIZE = 50;
     static const int32_t HALF_RECT_SIZE;
+    static const int32_t QUARTER_RECT_SIZE;
     SDL_Rect rect{0, 0, RECT_SIZE, RECT_SIZE};
+    SDL_Rect direction_mark_rect{0, 0, HALF_RECT_SIZE, HALF_RECT_SIZE};
     Vec2 mov{0, 0};
-    bool fire_requested;
+    bool firing;
     int32_t ms_since_last_shot;
+    Vec2 facing_direction{1, 0};
 };
 
 }
