@@ -1,6 +1,7 @@
 #ifndef SHOT_H
 #define SHOT_H
 
+#include "../data/CompAttrs.h"
 #include "ColoredBox.h"
 
 
@@ -15,6 +16,9 @@ public:
 private:
     //game logic
     int32_t BOX_SIZE() const override { return 10; }
+    bool has_attribute(CompAttrs attr) const override {
+        return attr == CompAttrs::projectile;
+    }
 };
 
 }}

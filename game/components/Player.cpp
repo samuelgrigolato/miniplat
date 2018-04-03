@@ -1,7 +1,8 @@
 #include <memory>
+#include "../data/CompAttrs.h"
+#include "registry.h"
 #include "Player.h"
 #include "Shot.h"
-#include "registry.h"
 
 
 const int32_t MILLIS_PER_SHOT = 500;
@@ -73,8 +74,7 @@ bool Player::tick(int32_t &elapsed_time) {
 }
 
 void Player::process_collision(std::shared_ptr<Component> other) {
-    // hit by a shot
-    if (std::dynamic_pointer_cast<Shot>(other) != NULL) {
+    if (other->has_attribute(CompAttrs::projectile)) {
         this->alive = false;
     }
 }
