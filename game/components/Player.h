@@ -3,9 +3,9 @@
 
 #include <stdint.h>
 #include "ColoredBox.h"
+#include "../data/Action.h"
 #include "../data/Vec2.h"
 #include "../data/Rect.h"
-#include "../data/KeyMap.h"
 
 
 namespace game {
@@ -15,8 +15,8 @@ using namespace data;
 
 class Player : public ColoredBox {
 public:
-    KeyMap key_map{-1, -1, -1, -1, -1};
-    void digest_event(SDL_Event *event) override;
+    uint8_t number;
+    void digest_action(Action *action) override;
     bool tick(int32_t &elapsed_time) override;
     void render(SDL_Renderer *renderer) override;
     void process_collision(std::shared_ptr<Component> other) override;

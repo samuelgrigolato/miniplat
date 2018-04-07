@@ -11,43 +11,48 @@ const int32_t MILLIS_PER_SHOT = 500;
 namespace game {
 namespace components {
 
-void Player::digest_event(SDL_Event *event) {
-    int8_t key_code;
-    switch (event->type) {
-        case SDL_KEYDOWN:
-            key_code = event->key.keysym.sym;
-            if (key_code == this->key_map.up) {
+void Player::digest_action(Action *action) {
+    if (action->player != this->number) {
+        return;
+    }
+    if (action->type == ActionType::start_moving) {
+        switch (*(action->params)) {
+            case 'U':
                 this->vel.y = -1;
                 this->facing_direction.y = -1;
                 this->facing_direction.x = 0;
-            } else if (key_code == this->key_map.down) {
+                break;
+            case 'D':
                 this->vel.y = 1;
                 this->facing_direction.y = 1;
                 this->facing_direction.x = 0;
-            } else if (key_code == this->key_map.right) {
-                this->vel.x = 1;
-                this->facing_direction.y = 0;
-                this->facing_direction.x = 1;
-            } else if (key_code == this->key_map.left) {
+                break;
+            case 'L':
                 this->vel.x = -1;
                 this->facing_direction.y = 0;
                 this->facing_direction.x = -1;
-            } else if (key_code == this->key_map.fire) {
-                this->firing = true;
-            }
-            break;
-        case SDL_KEYUP:
-            key_code = event->key.keysym.sym;
-            if (key_code == this->key_map.up || key_code == this->key_map.down) {
+                break;
+            case 'R':
+                this->vel.x = 1;
+                this->facing_direction.y = 0;
+                this->facing_direction.x = 1;
+                break;
+        }
+    } else if (action->type == ActionType::stop_moving) {
+        switch (*(action->params)) {
+            case 'U':
+            case 'D':
                 this->vel.y = 0;
-            } else if (key_code == this->key_map.left || key_code == this->key_map.right) {
+                break;
+            case 'L':
+            case 'R':
                 this->vel.x = 0;
-            } else if (key_code == this->key_map.fire) {
-                this->firing = false;
-            }
-            break;
-        default:
-            break;
+                break;
+        }
+    } else if (action->type == ActionType::start_firing) {
+        this->firing = true;
+    } else if (action->type == ActionType::stop_firing) {
+        this->firing = false;
     }
 }
 

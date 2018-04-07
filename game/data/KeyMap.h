@@ -8,6 +8,7 @@ namespace game {
 namespace data {
 
 struct KeyMap {
+    uint8_t player;
     int8_t up;
     int8_t left;
     int8_t down;
