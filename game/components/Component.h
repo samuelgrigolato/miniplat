@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <SDL.h>
-#include "../data/Action.h"
+#include "../data/InputStatus.h"
 #include "../data/Rect.h"
 #include "../data/CompAttrs.h"
 
@@ -16,7 +16,6 @@ class Component {
 public:
     virtual ~Component() {};
     virtual void init() {};
-    virtual void digest_action(Action *action) {};
     virtual bool tick(int32_t &elapsed_time) { return true; };
     virtual void render(SDL_Renderer *renderer) {};
     virtual bool has_attribute(CompAttrs attr) const { return false; };

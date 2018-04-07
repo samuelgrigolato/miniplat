@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include "ColoredBox.h"
-#include "../data/Action.h"
+#include "../data/InputStatus.h"
 #include "../data/Vec2.h"
 #include "../data/Rect.h"
 
@@ -16,7 +16,7 @@ using namespace data;
 class Player : public ColoredBox {
 public:
     uint8_t number;
-    void digest_action(Action *action) override;
+    void process_input(InputStatus &input_status);
     bool tick(int32_t &elapsed_time) override;
     void render(SDL_Renderer *renderer) override;
     void process_collision(std::shared_ptr<Component> other) override;

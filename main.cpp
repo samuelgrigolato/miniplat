@@ -4,10 +4,10 @@
 #include "game/data/KeyMap.h"
 #include "game/data/arena.h"
 #include "game/data/Rect.h"
-#include "game/data/Action.h"
-#include "game/init.h"
+#include "game/data/InputStatus.h"
 #include "game/components/registry.h"
 #include "game/components/Component.h"
+#include "game/components/Player.h"
 
 
 int main() {
@@ -43,88 +43,86 @@ int main() {
     // what the actual resolution is
     SDL_RenderSetLogicalSize(renderer, ARENA_WIDTH, ARENA_HEIGHT);
 
-    game::init();
-
-    std::list<KeyMap> key_maps;
-    key_maps.push_back(KeyMap{
-        0, // player;
-        SDLK_w, // up;
-        SDLK_a, // left;
-        SDLK_s, // down;
-        SDLK_d, // right;
-        SDLK_SPACE // fire;
-    });
-    key_maps.push_back(KeyMap{
-        1, // player;
-        (int8_t)SDLK_UP, // up;
-        (int8_t)SDLK_LEFT, // left;
-        (int8_t)SDLK_DOWN, // down;
-        (int8_t)SDLK_RIGHT, // right;
-        (int8_t)SDLK_KP_0 // fire;
-    });
+    int8_t num_players = 2;
+    KeyMap *key_maps = new KeyMap[num_players];
+    key_maps[0].up = SDLK_w;
+    key_maps[0].down = SDLK_s;
+    key_maps[0].left = SDLK_a;
+    key_maps[0].right = SDLK_d;
+    key_maps[0].fire = SDLK_SPACE;
+    key_maps[1].up = SDLK_UP;
+    key_maps[1].down = SDLK_DOWN;
+    key_maps[1].left = SDLK_LEFT;
+    key_maps[1].right = SDLK_RIGHT;
+    key_maps[1].fire = SDLK_KP_0;
+    InputStatus *input_statuses = new InputStatus[num_players];
+    std::shared_ptr<Player> *players = new std::shared_ptr<Player>[2];
+    players[0] = std::shared_ptr<Player>(new Player());
+    players[0]->number = 0;
+    players[0]->pos.x = ARENA_WIDTH / 10;
+    players[0]->pos.y = ARENA_HEIGHT / 10;
+    players[0]->color.r = 255;
+    players[0]->color.g = 100;
+    players[0]->color.b = 100;
+    add_component(players[0]);
+    players[1] = std::shared_ptr<Player>(new Player());
+    players[1]->number = 0;
+    players[1]->pos.x = (ARENA_WIDTH / 10) * 9;
+    players[1]->pos.y = (ARENA_HEIGHT / 10) * 9;
+    players[1]->color.r = 100;
+    players[1]->color.g = 100;
+    players[1]->color.b = 255;
+    add_component(players[1]);
 
     SDL_Event event;
-    std::queue<Action> pending_actions;
     auto running = true;
     int32_t last_time = SDL_GetTicks();
     int32_t current_time;
     int32_t elapsed_time;
     while (running) {
 
-        // AS CLIENT
-        // digest UI events (generate actions)
+        // digest UI events (update input status)
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = false;
             } else {
-                for (auto key_map : key_maps) {
-                    int8_t key_code;
-                    switch (event.type) {
-                        case SDL_KEYDOWN:
-                            key_code = event.key.keysym.sym;
-                            if (key_code == key_map.up) {
-                                pending_actions.push(Action{ key_map.player, ActionType::start_moving, "U" });
-                            } else if (key_code == key_map.down) {
-                                pending_actions.push(Action{ key_map.player, ActionType::start_moving, "D" });
-                            } else if (key_code == key_map.left) {
-                                pending_actions.push(Action{ key_map.player, ActionType::start_moving, "L" });
-                            } else if (key_code == key_map.right) {
-                                pending_actions.push(Action{ key_map.player, ActionType::start_moving, "R" });
-                            } else if (key_code == key_map.fire) {
-                                pending_actions.push(Action{ key_map.player, ActionType::start_firing, NULL });
+                for (int8_t i = 0; i < num_players; i++) {
+                    auto key_map = &key_maps[i];
+                    auto input_status = &input_statuses[i];
+                    if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
+                        int32_t key_code = event.key.keysym.sym;
+                        InputType input_type = InputType::none;
+                        if (key_code == key_map->up) {
+                            input_type = InputType::move_up;
+                        } else if (key_code == key_map->down) {
+                            input_type = InputType::move_down;
+                        } else if (key_code == key_map->left) {
+                            input_type = InputType::move_left;
+                        } else if (key_code == key_map->right) {
+                            input_type = InputType::move_right;
+                        } else if (key_code == key_map->fire) {
+                            input_type = InputType::fire;
+                        }
+                        if (input_type != InputType::none) {
+                            if (event.type == SDL_KEYDOWN) {
+                                input_status->set(input_type);
+                            } else if (event.type == SDL_KEYUP) {
+                                input_status->unset(input_type);
                             }
-                            break;
-                        case SDL_KEYUP:
-                            key_code = event.key.keysym.sym;
-                            if (key_code == key_map.up) {
-                                pending_actions.push(Action{ key_map.player, ActionType::stop_moving, "U" });
-                            } else if (key_code == key_map.down) {
-                                pending_actions.push(Action{ key_map.player, ActionType::stop_moving, "D" });
-                            } else if (key_code == key_map.left) {
-                                pending_actions.push(Action{ key_map.player, ActionType::stop_moving, "L" });
-                            } else if (key_code == key_map.right) {
-                                pending_actions.push(Action{ key_map.player, ActionType::stop_moving, "R" });
-                            } else if (key_code == key_map.fire) {
-                                pending_actions.push(Action{ key_map.player, ActionType::stop_firing, NULL });
-                            }
-                            break;
-                        default:
-                            break;
+                        }
                     }
                 }
             }
         }
-        // TODO: send actions to the server (this can be happening across the network)
 
-        // AS SERVER
-        // TODO: digest network packets (this also generates actions)
-        // process all pending actions
-        while (!pending_actions.empty()) {
-            for_each_component([&pending_actions](std::shared_ptr<Component> comp) {
-                comp->digest_action(&pending_actions.front());
-                return true;
-            });
-            pending_actions.pop();
+        // TODO: send input_statuses to the server (this can happen locally or across the network)
+        // TODO: digest network packets (receives updated input_statuses)
+
+        // process input statuses
+        for (int8_t i = 0; i < num_players; i++) {
+            auto input_status = input_statuses[i];
+            auto player = players[i];
+            player->process_input(input_status);
         }
         // run game logic
         current_time = SDL_GetTicks();
@@ -147,10 +145,10 @@ int main() {
                     c2->process_collision(c1);
                 }
             });
-        // TODO: broadcast state changes (this can be happening across the network)
 
-        // AS CLIENT
-        // TODO: receive state changes (this can be happening across the network)
+        // TODO: broadcast state changes (this can happen across the network)
+        // TODO: receive state changes (this can happen across the network)
+
         // render the next frame
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
@@ -159,6 +157,7 @@ int main() {
             return true;
         });
         SDL_RenderPresent(renderer);
+
     }
 
     SDL_Quit();

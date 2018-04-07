@@ -11,49 +11,30 @@ const int32_t MILLIS_PER_SHOT = 500;
 namespace game {
 namespace components {
 
-void Player::digest_action(Action *action) {
-    if (action->player != this->number) {
-        return;
+void Player::process_input(InputStatus &input_status) {
+    this->vel.x = 0;
+    this->vel.y = 0;
+    if (input_status.is_on(InputType::move_up)) {
+        this->vel.y -= 1;
+        this->facing_direction.y = -1;
+        this->facing_direction.x = 0;
     }
-    if (action->type == ActionType::start_moving) {
-        switch (*(action->params)) {
-            case 'U':
-                this->vel.y = -1;
-                this->facing_direction.y = -1;
-                this->facing_direction.x = 0;
-                break;
-            case 'D':
-                this->vel.y = 1;
-                this->facing_direction.y = 1;
-                this->facing_direction.x = 0;
-                break;
-            case 'L':
-                this->vel.x = -1;
-                this->facing_direction.y = 0;
-                this->facing_direction.x = -1;
-                break;
-            case 'R':
-                this->vel.x = 1;
-                this->facing_direction.y = 0;
-                this->facing_direction.x = 1;
-                break;
-        }
-    } else if (action->type == ActionType::stop_moving) {
-        switch (*(action->params)) {
-            case 'U':
-            case 'D':
-                this->vel.y = 0;
-                break;
-            case 'L':
-            case 'R':
-                this->vel.x = 0;
-                break;
-        }
-    } else if (action->type == ActionType::start_firing) {
-        this->firing = true;
-    } else if (action->type == ActionType::stop_firing) {
-        this->firing = false;
+    if (input_status.is_on(InputType::move_down)) {
+        this->vel.y += 1;
+        this->facing_direction.y = 1;
+        this->facing_direction.x = 0;
     }
+    if (input_status.is_on(InputType::move_left)) {
+        this->vel.x -= 1;
+        this->facing_direction.y = 0;
+        this->facing_direction.x = -1;
+    }
+    if (input_status.is_on(InputType::move_right)) {
+        this->vel.x += 1;
+        this->facing_direction.y = 0;
+        this->facing_direction.x = 1;
+    }
+    this->firing = input_status.is_on(InputType::fire);
 }
 
 bool Player::tick(int32_t &elapsed_time) {
