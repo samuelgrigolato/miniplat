@@ -18,13 +18,6 @@ const int8_t MAX_LOCAL_PLAYERS = 3;
 
 int run(server::Server *server) {
 
-    // asserts num of local players
-    int8_t num_local_players = server->get_num_local_players();
-    if (num_local_players > MAX_LOCAL_PLAYERS) {
-        printf("This client supports a maximum of %d local players.", MAX_LOCAL_PLAYERS);
-        return -1;
-    }
-
     // hardcode key maps
     // in the future this can be improved to allow
     // customization in a GUI menu
@@ -73,7 +66,7 @@ int run(server::Server *server) {
     // what the actual resolution is
     SDL_RenderSetLogicalSize(renderer, ARENA_WIDTH, ARENA_HEIGHT);
 
-    InputStatus *input_statuses = new InputStatus[num_local_players];
+    std::vector<InputStatus> input_statuses;
     SDL_Event event;
     auto running = true;
     while (running) {
@@ -82,8 +75,12 @@ int run(server::Server *server) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = false;
+            } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN) {
+                if (server->add_local_player()) {
+                    input_statuses.push_back(InputStatus{});
+                }
             } else {
-                for (int8_t i = 0; i < num_local_players; i++) {
+                for (int8_t i = 0; i < std::min(MAX_LOCAL_PLAYERS, server->get_num_local_players()); i++) {
                     auto key_map = &key_maps[i];
                     auto input_status = &input_statuses[i];
                     if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {

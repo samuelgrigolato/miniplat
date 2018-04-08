@@ -1,6 +1,8 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include <list>
+#include <vector>
 #include <stdint.h>
 #include "data/InputStatus.h"
 #include "components/Player.h"
@@ -11,17 +13,35 @@ namespace server {
 
 class Server {
 public:
-    Server(int8_t num_local_players);
-    int8_t get_num_local_players() {
-        return this->num_local_players;
+    virtual int8_t get_num_local_players() = 0;
+    virtual bool add_local_player() = 0;
+    virtual void tick(std::vector<data::InputStatus> input_statuses) = 0;
+};
+
+class LocalServer : public Server {
+public:
+    LocalServer();
+    int8_t get_num_local_players() override {
+        return this->players.size();
     }
-    void tick(data::InputStatus *input_statuses);
+    bool add_local_player() override;
+    void tick(std::vector<data::InputStatus> input_statuses) override;
 private:
-    std::shared_ptr<components::Player> *players;
-    int8_t num_local_players;
+    std::list<std::shared_ptr<components::Player>> players;
     int32_t last_time = 0;
     int32_t current_time = 0;
     int32_t elapsed_time = 0;
+};
+
+class NetworkMasterServer : public LocalServer {
+public:
+    int8_t get_num_local_players() override;
+    void tick(std::vector<data::InputStatus> input_statuses) override;
+};
+
+class NetworkClientServer : public Server {
+public:
+    void tick(std::vector<data::InputStatus> input_statuses) override;
 };
 
 }}
