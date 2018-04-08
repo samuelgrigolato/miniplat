@@ -22,8 +22,10 @@ add_sources(main.cpp)
 add_subdirectory("game")
 add_executable(miniplat ${SRCS})
 
+FIND_PACKAGE(SDL2 REQUIRED)
 
-INCLUDE (FindPkgConfig)
-PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+find_library(SDL2_NET_LIBRARY
+  NAMES SDL2_net)
+
 INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
-TARGET_LINK_LIBRARIES(miniplat ${SDL2_LIBRARIES})
+TARGET_LINK_LIBRARIES(miniplat ${SDL2_LIBRARIES} ${SDL2_NET_LIBRARY})

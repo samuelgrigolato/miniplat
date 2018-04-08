@@ -4,6 +4,7 @@
 #include <list>
 #include <vector>
 #include <stdint.h>
+#include <SDL_net.h>
 #include "data/InputStatus.h"
 #include "components/Player.h"
 
@@ -35,15 +36,22 @@ private:
 
 class NetworkMasterServer : public LocalServer {
 public:
+    NetworkMasterServer();
     int8_t get_num_local_players() override;
     void tick(std::vector<data::InputStatus> *input_statuses) override;
+private:
+    TCPsocket server_socket;
+    std::list<TCPsocket> sockets;
 };
 
 class NetworkClientServer : public Server {
 public:
+    NetworkClientServer();
     int8_t get_num_local_players() override;
     bool add_local_player() override;
     void tick(std::vector<data::InputStatus> *input_statuses) override;
+private:
+    TCPsocket socket;
 };
 
 }}

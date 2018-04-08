@@ -5,28 +5,31 @@
 int main() {
 
     char server_type;
-    printf("[D]edicated [M]aster, [L]ocal or [C]lient? ");
+    printf("[D]edicated, [M]aster, [L]ocal or [C]lient? ");
     scanf("%c", &server_type);
 
     game::server::Server *server;
     switch (server_type) {
         case 'D':
-            server = new game::server::LocalServer();
+        case 'd':
+            server = new game::server::NetworkMasterServer();
             while (true) {
                 server->tick(NULL);
             }
-            break;
         case 'M':
+        case 'm':
             server = new game::server::NetworkMasterServer();
             break;
         case 'L':
+        case 'l':
             server = new game::server::LocalServer();
             break;
         case 'C':
+        case 'c':
             server = new game::server::NetworkClientServer();
             break;
         default:
-            printf("Unknown server type.");
+            printf("Unknown server type.\n");
             return -1;
     }
 

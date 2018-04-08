@@ -68,13 +68,34 @@ void LocalServer::tick(std::vector<data::InputStatus> *input_statuses) {
 
 }
 
+NetworkMasterServer::NetworkMasterServer() {
+
+    IPaddress ip;
+    if (SDLNet_ResolveHost(&ip, NULL, 7890) == -1) {
+        printf("Unable to resolve host 0.0.0.0:7890: %s\n", SDLNet_GetError());
+        exit(1);
+    }
+    this->server_socket = SDLNet_TCP_Open(&ip);
+    if (!this->server_socket) {
+        printf("Unable to open TCP server socket at 0.0.0.0:7890: %s\n", SDLNet_GetError());
+        exit(1);
+    }
+
+}
+
 void NetworkMasterServer::tick(std::vector<data::InputStatus> *input_statuses) {
+
+    TCPsocket socket = SDLNet_TCP_Accept(this->server_socket);
+    if (socket) {
+        this->sockets.push_back(socket);
+        // send current state
+    }
 
     // TODO: receive remote input statuses
 
     LocalServer::tick(input_statuses);
 
-    // TODO: broadcast state changes
+    // broadcast state changes to each socket
 
 }
 
@@ -82,11 +103,28 @@ int8_t NetworkMasterServer::get_num_local_players() {
     return LocalServer::get_num_local_players();
 }
 
+NetworkClientServer::NetworkClientServer() {
+
+    IPaddress ip;
+    if (SDLNet_ResolveHost(&ip, "localhost", 7890) == -1) {
+        printf("Unable to resolve host localhost:7890: %s\n", SDLNet_GetError());
+        exit(1);
+    }
+    this->socket = SDLNet_TCP_Open(&ip);
+    if (!this->socket) {
+        printf("Unable to connect to 0.0.0.0:7890: %s\n", SDLNet_GetError());
+        exit(1);
+    }
+
+    // read current state
+
+}
+
 void NetworkClientServer::tick(std::vector<data::InputStatus> *input_statuses) {
 
     // TODO: send input statuses
 
-    // TODO: receive state changes
+    // receive state changes
 
 }
 
