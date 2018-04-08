@@ -34,12 +34,12 @@ bool LocalServer::add_local_player() {
     return true;
 }
 
-void LocalServer::tick(std::vector<data::InputStatus> input_statuses) {
+void LocalServer::tick(std::vector<data::InputStatus> *input_statuses) {
 
     // process input statuses
     int8_t player_i = 0;
     for (auto player : this->players) {
-        auto input_status = input_statuses[player_i];
+        auto input_status = (*input_statuses)[player_i];
         player->process_input(input_status);
         player_i++;
     }
@@ -68,7 +68,7 @@ void LocalServer::tick(std::vector<data::InputStatus> input_statuses) {
 
 }
 
-void NetworkMasterServer::tick(std::vector<data::InputStatus> input_statuses) {
+void NetworkMasterServer::tick(std::vector<data::InputStatus> *input_statuses) {
 
     // TODO: receive remote input statuses
 
@@ -78,12 +78,24 @@ void NetworkMasterServer::tick(std::vector<data::InputStatus> input_statuses) {
 
 }
 
-void NetworkClientServer::tick(std::vector<data::InputStatus> input_statuses) {
+int8_t NetworkMasterServer::get_num_local_players() {
+    return LocalServer::get_num_local_players();
+}
+
+void NetworkClientServer::tick(std::vector<data::InputStatus> *input_statuses) {
 
     // TODO: send input statuses
 
     // TODO: receive state changes
 
+}
+
+int8_t NetworkClientServer::get_num_local_players() {
+    return 0;
+}
+
+bool NetworkClientServer::add_local_player() {
+    return false;
 }
 
 }}

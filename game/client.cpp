@@ -109,7 +109,7 @@ int run(server::Server *server) {
             }
         }
 
-        server->tick(input_statuses);
+        server->tick(&input_statuses);
 
         // render the next frame
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);

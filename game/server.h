@@ -15,7 +15,7 @@ class Server {
 public:
     virtual int8_t get_num_local_players() = 0;
     virtual bool add_local_player() = 0;
-    virtual void tick(std::vector<data::InputStatus> input_statuses) = 0;
+    virtual void tick(std::vector<data::InputStatus> *input_statuses) = 0;
 };
 
 class LocalServer : public Server {
@@ -25,7 +25,7 @@ public:
         return this->players.size();
     }
     bool add_local_player() override;
-    void tick(std::vector<data::InputStatus> input_statuses) override;
+    void tick(std::vector<data::InputStatus> *input_statuses) override;
 private:
     std::list<std::shared_ptr<components::Player>> players;
     int32_t last_time = 0;
@@ -36,12 +36,14 @@ private:
 class NetworkMasterServer : public LocalServer {
 public:
     int8_t get_num_local_players() override;
-    void tick(std::vector<data::InputStatus> input_statuses) override;
+    void tick(std::vector<data::InputStatus> *input_statuses) override;
 };
 
 class NetworkClientServer : public Server {
 public:
-    void tick(std::vector<data::InputStatus> input_statuses) override;
+    int8_t get_num_local_players() override;
+    bool add_local_player() override;
+    void tick(std::vector<data::InputStatus> *input_statuses) override;
 };
 
 }}
